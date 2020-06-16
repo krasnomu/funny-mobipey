@@ -178,3 +178,115 @@ SoX is the "Swiss Army knife of sound processing programs", and can be used to d
 ### Install the actual aligner
 
 Prosodylab-Aligner lives on GitHub, a repository for open-source software. You may want to create an account there, and perhaps install 'GitHub.app', which makes it easier to interact with GitHub. But for the purposes of installing the aligner, all you need is the git command-line tool, which is part of Xcode (and so should already be installed). Launch the application 'Terminal.app' (if you haven't already) and type the following:
+
+    $ git clone http://github.com/prosodylab/Prosodylab-Aligner
+
+Finally, you need to install a few additional dependencies for Python. Enter the following commands to take care of this:
+
+    $ cd Prosodylab-Aligner 
+    $ pip3 install -r requirements.txt
+
+At this point, you can test your installation by running:
+
+    $ python3 -m aligner --help
+
+which should print out some information about how to use the aligner.
+
+## Installation for Linux users
+
+The instructions are the same as for Mac users, with the exception that there is no direct analogue to XCode. Instead, you will probably need to use your distribution's package manager to install a C compiler; on Ubuntu, for instance, the relevant packages are `gcc-multilib` and `libc-dev`.
+
+## Installation for Windows users
+
+While Prosodylab-Aligner is not designed for Windows support, the appendix of [Yun et al. 2016](https://linguistics.stonybrook.edu/jiwonyun/papers/Yun_et_al_2016_AH26.pdf) contains detailed Windows installation instructions. Note that while you may find these useful, they are are third-party instructions and we make no promises to their correctness.
+
+## Tutorial
+
+### Obtaining a dictionary
+
+The aligner comes with an (American) English dictionary file `eng.dict`. Some additional dictionaries we have created are available at [`prosodylab.dictionaries` repository](https://github.com/prosodylab/prosodylab.dictionaries). Other dictionaries can be found online, or written for specific tasks. If you're working with RP speakers, [CELEX](http://catalog.ldc.upenn.edu/LDC96L14) might be a good choice. For languages with highly regular, transparent orthographies (e.g., Spanish or Tagalog), you may want to create a simple rule-based grapheme-to-phoneme system using a cascade of ordered rules.
+
+### Aligning files
+
+Imagine you simply want to align multiple audio files with their associated label files, in the following format:
+
+    file data/myexp_1_1_1.*
+    data/myexp_1_1_1.lab: ASCII text
+    data/myexp_1_1_1.wav: RIFF (little-endian) data, WAVE audio, Microsoft PCM, 16 bit, mono 22050 Hz
+
+    cat data/myexp_1_1_1.lab
+    BARACK OBAMA WAS TALKING ABOUT HOW THERE'S A MISUNDERSTANDING THAT ONE MINORITY GROUP CAN'T GET ALONG WITH ANOTHER SUCH AS AFRICAN AMERICANS AND LATINOS AND HE'S SAID THAT HE HIMSELF HAS SEEN IT HAPPEN THAT THEY CAN AND HE'S BEEN INVOLVED WITH GROUPS OF OTHER MINORITIES
+
+If you'd like to align multiple .wav/.lab file pairs, and they're all in a single directory `data/`, aligning them is as simple as:
+
+    $ python3 -m aligner -r lang-mod.zip -a data/ -d lang.dict 
+    ...
+
+This will compute the best alignments, and then place the Praat TextGrids in the `data/` directory. 
+
+The `-r` flag indicates the source of the acoustic model and settings to be used. In the example, `lang-mod.zip` represents the zip directory containing the acoustic model to be used.
+
+`-a data/` indicates the directory containing the data to be aligned.
+
+`-d lang.dict` points to the dictionary to be used in aligning the data.
+
+### Likely errors
+
+#### Out of dictionary words
+
+Secondly, a word in your .lab files may be missing from the dictionary. Such words are written to `OOV.txt`. You can transcribe these using a text editor, then mix them back in like so:
+
+    $ ./sort.py lang.dict OOV.txt > tmp; 
+    $ mv tmp lang.dict
+
+If you are transcribing new words using the CMU phone set, see [this page](http://cslu.ohsu.edu/~gormanky/papers/codes/) for IPA equivalents.
+
+#### Subprocess Process Error
+
+Sometimes there are processing errors that occur. These can often be fixed by entering the following into Terminal:
+
+    $ make clean
+    $ export CPPFLAGS=-UPHNALG
+    $ ./configure --disable-hlmtools --disable-hslab
+    $ make -j4
+    $ sudo make -j4 install 
+    
+Provide your password, if necessary.
+
+### Training your own models
+
+The aligner module also allows you to train your own models, 
+
+    $ python3 -m aligner -c lang.yaml -d lang.dict -e 10 -t lang/ -w lang-mod.zip
+    ...
+
+Please note: THIS REQUIRES A LOT OF DATA to work well, and further takes a long time when there is a lot of data. 
+
+When the `-v` or `-V` flags are specified, output is verbose. `-v` indicates verbose output while `-V` indicates more verbose output.
+
+The `-c` flag points to the configuration file to use. In the example above, this file is `lang.yaml`. This file contains information about the setting preferences and phone set and is used to save the state of the aligner.
+
+The `-d` flag points to the dictionary containing the words to be aligned. 
+
+The `-w` flag indicates that the resulting acoustic model and settings will be written to a file of the name following. In the example, the acoustic model and settings will be written to `lang-mod.zip`.
+
+The `-e` flag is used to specify the number of training iterations per "round": the aligner performs three rounds of training, each of which take approximately the same time, so the effect of increasing this value by one is approximately 3-fold. 
+
+Lastly, the `-t` flag indicates the source of the training data. In the example, this is a directory called `lang/`. When `-t` is specified, a few other command-line options become available. The `-s` flag specifies samplerate for the models used, both training and testing data will be resampled to this rate, if they do not match it. For instance, to use 44010 Hz models, you could say:
+
+    $ python3 -m aligner -c lang.yaml -d lang.dict -e 10 -t lang -w lang-mod.zip -s 44010
+    ...
+
+Resampling this way can take a long time, especially with large sets of data. It is therefore recommended that samplerate specifications are made using `resample.sh`. This requires installing SoX (see above installation instructions).
+
+### Resampling Data Files
+
+To be more efficient, it is recommended that `resample.sh` is used to resample data. To do this, enter the following into your Terminal while in the aligner directory: 
+
+    $ ./resample.sh -s 16000 -r data/ -w newDirectory/ 
+
+The `-s` flag specifies the desired sample rate (Hz). 16000 Hz is the default for the aligner, and therefore recommended as a sample rate. Alternatively, a different sample rate can be specified for `resample.sh` and aligner module.
+
+The `-r` flag points to the directory containing the files to be resampled. 
+
+The `-w` flag indicates the name of a directory where the new, resampled files should be written. 
