@@ -231,3 +231,48 @@ IS {0} {0}
         with -log likelihood confidence scores for each audio file
         """
         proc = Popen(["HVite", "-a", "-m",
+                               "-T", "1",
+                               "-o", "SM",
+                               "-y", "lab",
+                               "-b", SIL,
+                               "-i", mlf,
+                               "-L", corpus.labdir,
+                               "-C", self.HERest_cfg,
+                               "-S", corpus.feature_scp,
+                               "-H", os.path.join(self.curdir, MACROS),
+                               "-H", os.path.join(self.curdir, HMMDEFS),
+                               "-I", corpus.word_mlf,] +
+                               #FIXME(kg) do we want this?
+                               #"-s", str(self.HVite_opts["SFAC"]),
+                               #"-t"] + self.pruning +
+                     [corpus.taskdict, corpus.phons],
+                     stdout=PIPE)
+        with open(scores, "w") as sink:
+            i = 0
+            for line in proc.stdout:
+                m = match(HVITE_SCORE, line.decode("UTF-8"))
+                if m:
+                    print('"{!s}",{!s}'.format(corpus.audiofiles[i],
+                                               m.group(1)), file=sink)
+                    i += 1
+        # Popen equivalent to check_call...
+        retcode = proc.wait()
+        if retcode != 0:
+            raise CalledProcessError(retcode, proc.args)
+
+    def HTKbook_training_regime(self, corpus, epochs, flatstart=True):
+        if flatstart:
+            logging.info("Flat start training.")
+            self.flatstart(corpus)
+        self.train(corpus, epochs)
+        logging.info("Modeling silence.")
+        self.small_pause(corpus)
+        logging.info("Additional training.")
+        self.train(corpus, epochs)
+        logging.info("Realigning.")
+        self.realign(corpus)
+        logging.info("Final training.")
+        self.train(corpus, epochs)
+
+    def __del__(self):
+        rmtree(self.hmmdir)
