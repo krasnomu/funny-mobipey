@@ -20,4 +20,19 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 """
-Utilities for audio 
+Utilities for audio resampling (etc.)
+"""
+
+import wave
+
+from numpy import asarray
+from scipy.io import wavfile
+from scipy.signal import resample
+
+
+class WavFile(object):
+
+    """
+    Class representing a mono wav file
+    """
+
