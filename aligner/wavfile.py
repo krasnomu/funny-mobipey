@@ -50,4 +50,8 @@ class WavFile(object):
 
     @classmethod
     def from_file(cls, filename):
-        (Fs, signal) = wa
+        (Fs, signal) = wavfile.read(filename)
+        if signal.ndim > 1:
+            raise ValueError("Expected mono audio," +
+                             " but '{}'".format(filename) +
+                
