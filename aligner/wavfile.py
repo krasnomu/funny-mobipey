@@ -36,3 +36,11 @@ class WavFile(object):
     Class representing a mono wav file
     """
 
+    def __init__(self, signal, Fs):
+        self.signal = asarray(signal)
+        self.Fs = Fs
+
+    @staticmethod
+    def samplerate(filename):
+        """
+        Get samplerate without reading the entire wav
