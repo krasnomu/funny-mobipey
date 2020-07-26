@@ -54,4 +54,8 @@ class WavFile(object):
         if signal.ndim > 1:
             raise ValueError("Expected mono audio," +
                              " but '{}'".format(filename) +
-                
+                             " has {} channels.".format(signal.ndim))
+        return cls(signal, Fs)
+
+    def __repr__(self):
+        return "{}(signal={!r}, Fs={!r})".format(self.__class__
