@@ -58,4 +58,11 @@ class WavFile(object):
         return cls(signal, Fs)
 
     def __repr__(self):
-        return "{}(signal={!r}, Fs={!r})".format(self.__class__
+        return "{}(signal={!r}, Fs={!r})".format(self.__class__.__name__,
+                                                 self.signal, self.Fs)
+
+    def __len__(self):
+        return len(self.signal)
+
+    def write(self, filename):
+        wavfile.write(
