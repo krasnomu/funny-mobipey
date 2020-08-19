@@ -65,4 +65,9 @@ class WavFile(object):
         return len(self.signal)
 
     def write(self, filename):
-        wavfile.write(
+        wavfile.write(filename, self.Fs, self.signal)
+
+    def _resample(self, Fs_out):
+        ratio = Fs_out / self.Fs
+        resampled_signal = resample(self.signal, int(ratio * len(self)))
+        retur
