@@ -76,4 +76,5 @@ class WavFile(object):
         return WavFile(self._resample(Fs_out), Fs_out)
 
     def resample_bang(self, Fs_out):
-        self.signal = self._resample(Fs_
+        self.signal = self._resample(Fs_out)
+        self.Fs = Fs_out
