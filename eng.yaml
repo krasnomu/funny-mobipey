@@ -1,4 +1,8 @@
 # for human reading only
 authors: Kyle Gorman
 language: English
-citation: "K. Gorman, J. Howell, and M. Wagner. 2011. Prosodylab-A
+citation: "K. Gorman, J. Howell, and M. Wagner. 2011. Prosodylab-Aligner: A tool for forced alignment of laboratory speech. Canadian Acoustics, 39(3), 192-193."
+URL: http://prosodylab.org/tools/aligner/
+
+# basic features
+samplerate:
