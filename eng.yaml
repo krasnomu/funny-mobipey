@@ -38,3 +38,14 @@ HCompV:
 HERest:
     TARGETRATE: 100000.0
     TARGETKIND: MFCC_D_A_0
+    WINDOWSIZE: 250000.0
+    PREEMCOEF: 0.97
+    USEHAMMING: T
+    ENORMALIZE: T
+    CEPLIFTER: 22
+    NUMCHANS: 20
+    NUMCEPS: 12
+
+# specs for the decoder; change at your own risk
+HVite:
+    SF
