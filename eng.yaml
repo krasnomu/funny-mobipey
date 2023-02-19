@@ -48,4 +48,4 @@ HERest:
 
 # specs for the decoder; change at your own risk
 HVite:
-    SF
+    SFAC: 5
