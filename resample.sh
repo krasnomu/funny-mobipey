@@ -13,4 +13,18 @@ SAMPLERATES=(4000 8000 10000 11025 12500 15625 16000 20000 25000
              156250 200000)
 
 usage() { 
-    echo "Usage: $0 [-s SAMPLERATE] [-r SOURCEDIR] [-w SINKDIR]" >
+    echo "Usage: $0 [-s SAMPLERATE] [-r SOURCEDIR] [-w SINKDIR]" >&2
+}
+
+fail() {
+    usage
+    echo "$*" >&2
+    echo "Aborting." >&2
+    exit 1
+}
+
+# check for presence of SoX
+command -v $SOX >/dev/null 2>&1 || fail "$SOX not found."
+
+# parse args
+while 
