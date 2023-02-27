@@ -27,4 +27,14 @@ fail() {
 command -v $SOX >/dev/null 2>&1 || fail "$SOX not found."
 
 # parse args
-while 
+while getopts "s:r:w:" OPT; do
+    case $OPT in
+        s)
+            S=$OPTARG
+            ;;
+        r)
+            R=$OPTARG
+            ;;
+        w)
+            W=$OPTARG
+ 
