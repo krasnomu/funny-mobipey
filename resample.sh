@@ -37,4 +37,14 @@ while getopts "s:r:w:" OPT; do
             ;;
         w)
             W=$OPTARG
- 
+            ;;
+        \?)
+            fail "Invalid option."
+            ;;
+        :)
+            fail "Option '-$OPT' requires an argument."
+    esac
+done
+
+# check samplerate validity
+[ -n "$S"
