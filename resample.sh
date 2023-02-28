@@ -47,4 +47,12 @@ while getopts "s:r:w:" OPT; do
 done
 
 # check samplerate validity
-[ -n "$S"
+[ -n "$S" ] || fail "Samplerate (-s) not set."
+VALID_SR=false
+for SR in "${SAMPLERATES[@]}"; do
+    if [ "$SR" -eq "$S" ]; then
+        VALID_SR=true
+        break;
+    fi
+done
+[ $VALID_SR == true ] || fail `printf 
