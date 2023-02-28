@@ -55,4 +55,8 @@ for SR in "${SAMPLERATES[@]}"; do
         break;
     fi
 done
-[ $VALID_SR == true ] || fail `printf 
+[ $VALID_SR == true ] || fail `printf "Samplerate specified (%d Hz) is invalid." "$S"`
+
+# check directory validity
+[ -n "$R" ] || fail "Source (-r) flag not set."
+[ -d "$R" ] || fail `printf "Source '%s' is not a directory." "
