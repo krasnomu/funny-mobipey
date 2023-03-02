@@ -59,4 +59,7 @@ done
 
 # check directory validity
 [ -n "$R" ] || fail "Source (-r) flag not set."
-[ -d "$R" ] || fail `printf "Source '%s' is not a directory." "
+[ -d "$R" ] || fail `printf "Source '%s' is not a directory." "$R"`
+[ -n "$W" ] || fail "Sink (-w) flag not set."
+mkdir -p "$W" || fail `printf "Cannot create directory '%s'." "$W"`
+[ "$R" != "$W" ] || fail "Identical source 
