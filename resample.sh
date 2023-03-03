@@ -62,4 +62,9 @@ done
 [ -d "$R" ] || fail `printf "Source '%s' is not a directory." "$R"`
 [ -n "$W" ] || fail "Sink (-w) flag not set."
 mkdir -p "$W" || fail `printf "Cannot create directory '%s'." "$W"`
-[ "$R" != "$W" ] || fail "Identical source 
+[ "$R" != "$W" ] || fail "Identical source and sink directories."
+
+# actually do it (finally!)
+for SOURCEFILE in $R/*.$EXT; do
+    SINKFILE=$W/`basename $SOURCEFILE`
+    `printf "$SOXCMD" "$SOURCEFILE" "$SINKFILE" "$S" `
