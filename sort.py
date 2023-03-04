@@ -5,3 +5,8 @@
 
 
 import fileinput
+
+
+if __name__ == "__main__":
+    lines = frozenset(l.rstrip() for l in fileinput.input())  # accumulate
+    print("\n".join(sorted(lines)))                           # linearize
